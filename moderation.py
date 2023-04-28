@@ -119,10 +119,9 @@ async def main(Client: commands.Bot):
         },
     }
 
-    async def timeout(interaction: any, member: discord.Member, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0):
-        duration = datetime.timedelta(seconds=seconds, minutes=minutes, hours= hours, days=days)
-        await member.timeout(datetime.datetime.utcnow() + duration)
-        await member.send(f'{member.mention} You were timed out until for {duration}')
+    async def timeout(interaction: any, member: discord.Member, duration):
+        await member.timeout(discord.utils.utcnow() + duration)
+        await member.send(f'{member.mention} You were timed out for {duration} due to breaking a rule. If you believe this was unfair, please DM a moderator.')
 
     async def banUser(user: discord.User):
         try:
@@ -169,7 +168,6 @@ async def main(Client: commands.Bot):
                             max = x.get("max")
                             dur = x.get("dur")
                             if damage >= min and damage <= max:
-                                print(dur)
                                 current_time_out = dur
 
                         if current_time_out != None:
@@ -333,6 +331,8 @@ async def main(Client: commands.Bot):
                     continue
                 elif x.name == "ㅤㅤㅤㅤㅤAchievementsㅤㅤㅤㅤㅤ":
                     continue
+                elif x.name == "ㅤㅤㅤㅤㅤReaction Rolesㅤㅤㅤㅤㅤ":
+                    continue
 
                 if description_to_set == "":
                     description_to_set = f"{x.mention}"
@@ -385,7 +385,7 @@ async def main(Client: commands.Bot):
             user_tbl = await Client.db.execute(f"SELECT * FROM moderation WHERE user={interaction.user.id} AND guild={interaction.guild_id}")
             tbl_data = await user_tbl.fetchone()
             if not tbl_data:
-                await Client.db.execute("INSERT OR IGNORE INTO moderation (user, rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, damage, guild) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (user.id, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", 0, interaction.guild_id))
+                await Client.db.execute("INSERT OR IGNORE INTO moderation (user, rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10, damage, guild) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (interaction.user.id, "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", 0, interaction.guild_id))
 
             description_to_set = "No roles provided"
             user = interaction.user
